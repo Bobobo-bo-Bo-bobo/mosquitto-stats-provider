@@ -1,0 +1,54 @@
+package main
+
+type mqttStatistics struct {
+	totalClients            uint64  // $SYS/broker/clients/total
+	maximumClients          uint64  // $SYS/broker/clients/maximum
+	incativeClients         uint64  // $SYS/broker/clients/inactive
+	disconnectedClients     uint64  // $SYS/broker/clients/disconnected
+	activeClients           uint64  // $SYS/broker/clients/active
+	connectedClients        uint64  // $SYS/broker/clients/connected
+	expiredClients          uint64  // $SYS/broker/clients/expired
+	messagesReceived1min    float64 // $SYS/broker/load/messages/received/1min
+	messagesReceived5min    float64 // $SYS/broker/load/messages/received/5min
+	messagesReceived15min   float64 // $SYS/broker/load/messages/received/15min
+	messagesSent1min        float64 // $SYS/broker/load/messages/sent/1min
+	messagesSent5min        float64 // $SYS/broker/load/messages/sent/5min
+	messagesSent15min       float64 // $SYS/broker/load/messages/sent/15min
+	publishDropped1min      float64 // $SYS/broker/load/publish/dropped/1min
+	publishDropped5min      float64 // $SYS/broker/load/publish/dropped/5min
+	publishDropped15min     float64 // $SYS/broker/load/publish/dropped/15min
+	publishReceived1min     float64 // $SYS/broker/load/publish/received/1min
+	publishReceived5min     float64 // $SYS/broker/load/publish/received/5min
+	publishReceived15min    float64 // $SYS/broker/load/publish/received/15min
+	publishSent1min         float64 // $SYS/broker/load/publish/sent/1min
+	publishSent5min         float64 // $SYS/broker/load/publish/sent/5min
+	publishSent15min        float64 // $SYS/broker/load/publish/sent/15min
+	bytesReceived1min       float64 // $SYS/broker/load/bytes/received/1min
+	bytesReceived5min       float64 // $SYS/broker/load/bytes/received/5min
+	bytesReceived15min      float64 // $SYS/broker/load/bytes/received/15min
+	bytesSent1min           float64 // $SYS/broker/load/bytes/sent/1min
+	bytesSent5min           float64 // $SYS/broker/load/bytes/sent/5min
+	bytesSent15min          float64 // $SYS/broker/load/bytes/sent/15min
+	sockets1min             float64 // $SYS/broker/load/sockets/1min
+	sockets5min             float64 // $SYS/broker/load/sockets/5min
+	sockets15min            float64 // $SYS/broker/load/sockets/15min
+	connections1min         float64 // $SYS/broker/load/connections/1min
+	connections5min         float64 // $SYS/broker/load/connections/5min
+	connections15min        float64 // $SYS/broker/load/connections/15min
+	messagesStored          uint64  // $SYS/broker/messages/stored
+	messagesReceived        uint64  // $SYS/broker/messages/received
+	messagesSent            uint64  // $SYS/broker/messages/sent
+	messagesStoredCount     uint64  // $SYS/broker/store/messages/count
+	messagesStoredBytes     uint64  // $SYS/broker/store/messages/bytes
+	subscriptionsCount      uint64  // $SYS/broker/subscriptions/count
+	retainedMessagesCount   uint64  // $SYS/broker/retained messages/count
+	heapCurrent             uint64  // $SYS/broker/heap/current
+	heapMaximum             uint64  // $SYS/broker/heap/maximum
+	publishMessagesDropped  uint64  // $SYS/broker/publish/messages/dropped
+	publishMessagesReceived uint64  // $SYS/broker/publish/messages/received
+	publishMessagesSent     uint64  // $SYS/broker/publish/messages/sent
+	publishBytesReceived    uint64  // $SYS/broker/publish/bytes/received
+	publishBytesSent        uint64  // $SYS/broker/publish/bytes/sent
+	bytesReceived           uint64  // $SYS/broker/bytes/received
+	bytesSent               uint64  // $SYS/broker/bytes/sent
+}
