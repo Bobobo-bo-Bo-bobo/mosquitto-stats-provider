@@ -19,6 +19,7 @@ type serviceConfiguration struct {
 	Listen             string `ini:"listen"`
 	InfluxEndpoint     string `ini:"influx_endpoint"`
 	PrometheusEndpoint string `ini:"prometheus_endpoint"`
+	KeyValueEndpoint   string `ini:"key_value_endpoint"`
 }
 
 type configuration struct {

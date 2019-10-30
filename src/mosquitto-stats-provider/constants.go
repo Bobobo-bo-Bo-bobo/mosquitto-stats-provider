@@ -29,3 +29,6 @@ const (
 )
 
 const mosquittoStatisticsTopic = "$SYS/#"
+const kvDefaultEndpoint = "/kv"
+const influxDefaultEndpoint = "/influx"
+const prometheusDefaultEndpoint = "/metrics"
