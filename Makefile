@@ -1,7 +1,7 @@
 GOPATH	= $(CURDIR)
 BINDIR	= $(CURDIR)/bin
 
-PROGRAMS = mosquitto-stats-influx-provider
+PROGRAMS = mosquitto-stats-provider
 
 depend:
 	env GOPATH=$(GOPATH) go get -u github.com/sirupsen/logrus
@@ -19,15 +19,15 @@ destdirs:
 	mkdir -p -m 0755 $(DESTDIR)/usr/bin
 
 strip: build
-	strip --strip-all $(BINDIR)/mosquitto-stats-influx-provider
+	strip --strip-all $(BINDIR)/mosquitto-stats-provider
 
 install: strip destdirs install-bin
 
 install-bin:
-	install -m 0755 $(BINDIR)/mosquitto-stats-influx-provider $(DESTDIR)/usr/bin
+	install -m 0755 $(BINDIR)/mosquitto-stats-provider $(DESTDIR)/usr/bin
 
 clean:
-	/bin/rm -f bin/mosquitto-stats-influx-provider
+	/bin/rm -f bin/mosquitto-stats-provider
 
 distclean: clean
 	rm -rf src/github.com/
