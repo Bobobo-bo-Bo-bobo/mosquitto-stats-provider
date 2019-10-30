@@ -476,21 +476,21 @@ func processMessages(msg mqtt.Message) {
 			mqttStats.bytesSent += u
 		}
 	} else {
-	    log.WithFields(log.Fields{
-		    "mqtt.server":        config.MQTT.Server,
-		    "mqtt.client_id":     config.MQTT.ClientID,
-		    "mqtt.tls_ca":        config.MQTT.TLSCA,
-		    "mqtt.tls_cert":      config.MQTT.TLSCert,
-		    "mqtt.tls_key":       config.MQTT.TLSKey,
-		    "mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
-		    "mqtt.qos":           config.MQTT.QoS,
-		    "mqtt.username":      config.MQTT.Username,
-		    "mqtt.password":      config.MQTT.mqttPassword,
-		    "mqtt.password_file": config.MQTT.PasswordFile,
-		    "message.topic":      topic,
-		    "message.payload":    payload,
-	    }).Warn("Unhandled MQTT message on statistics topic")
-	    return
+		log.WithFields(log.Fields{
+			"mqtt.server":        config.MQTT.Server,
+			"mqtt.client_id":     config.MQTT.ClientID,
+			"mqtt.tls_ca":        config.MQTT.TLSCA,
+			"mqtt.tls_cert":      config.MQTT.TLSCert,
+			"mqtt.tls_key":       config.MQTT.TLSKey,
+			"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
+			"mqtt.qos":           config.MQTT.QoS,
+			"mqtt.username":      config.MQTT.Username,
+			"mqtt.password":      config.MQTT.mqttPassword,
+			"mqtt.password_file": config.MQTT.PasswordFile,
+			"message.topic":      topic,
+			"message.payload":    payload,
+		}).Warn("Unhandled MQTT message on statistics topic")
+		return
 	}
 }
 
