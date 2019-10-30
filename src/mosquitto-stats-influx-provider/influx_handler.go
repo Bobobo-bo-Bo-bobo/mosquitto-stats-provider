@@ -114,4 +114,5 @@ func influxHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 	mutex.Unlock()
 	writer.Write(str)
+	str = nil
 }
