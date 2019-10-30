@@ -475,7 +475,7 @@ func processMessages(msg mqtt.Message) {
 		} else {
 			mqttStats.bytesSent += u
 		}
-	} else if topic == "$$SYS/broker/version" {
+	} else if topic == "$SYS/broker/version" {
 		// skip
 	} else if topic == "$SYS/broker/uptime" {
 		// skip
