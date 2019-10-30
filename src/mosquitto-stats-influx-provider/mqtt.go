@@ -475,6 +475,10 @@ func processMessages(msg mqtt.Message) {
 		} else {
 			mqttStats.bytesSent += u
 		}
+	} else if topic == "$$SYS/broker/version" {
+		// skip
+	} else if topic == "$SYS/broker/uptime" {
+		// skip
 	} else {
 		log.WithFields(log.Fields{
 			"mqtt.server":        config.MQTT.Server,
