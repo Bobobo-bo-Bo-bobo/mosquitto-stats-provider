@@ -12,6 +12,7 @@ type mqttConfiguration struct {
 	Password     string `ini:"password"`
 	PasswordFile string `ini:"password_file"`
 	authMethod   uint
+	mqttPassword string
 }
 
 type serviceConfiguration struct {

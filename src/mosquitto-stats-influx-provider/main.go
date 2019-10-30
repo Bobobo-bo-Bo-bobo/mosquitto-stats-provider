@@ -14,6 +14,7 @@ import (
 // TODO: Is it really neccessary to declare this as a global variable ?
 var mutex sync.Mutex
 var mqttStats mqttStatistics
+var config configuration
 
 func main() {
 	var configFile = flag.String("config", "", "Path to configuration file")
@@ -22,6 +23,7 @@ func main() {
 	var verbose = flag.Bool("verbose", false, "Verbose output")
 	var _fmt = new(log.TextFormatter)
 	var wg sync.WaitGroup
+	var err error
 
 	_fmt.FullTimestamp = true
 	_fmt.TimestampFormat = time.RFC3339
@@ -52,18 +54,17 @@ func main() {
 		}).Info("Parsing configuration file")
 	}
 
-	config, err := parseConfigFile(*configFile)
+	config, err = parseConfigFile(*configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 	config.verbose = *verbose
 
-	if config.verbose {
-		mqttPassword := ""
-		if config.MQTT.Password != "" {
-			mqttPassword = "<redacted>"
-		}
+	if config.MQTT.Password != "" {
+		config.MQTT.mqttPassword = "<redacted>"
+	}
 
+	if config.verbose {
 		log.WithFields(log.Fields{
 			"service.listen":              config.Service.Listen,
 			"service.influx_endpoint":     config.Service.InfluxEndpoint,
@@ -79,7 +80,7 @@ func main() {
 			"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
 			"mqtt.qos":           config.MQTT.QoS,
 			"mqtt.username":      config.MQTT.Username,
-			"mqtt.password":      mqttPassword,
+			"mqtt.password":      config.MQTT.mqttPassword,
 			"mqtt.password_file": config.MQTT.PasswordFile,
 		}).Info("Validating MQTT configuration")
 	}
@@ -95,11 +96,6 @@ func main() {
 	wg.Add(2)
 
 	if config.verbose {
-		mqttPassword := ""
-		if config.MQTT.Password != "" {
-			mqttPassword = "<redacted>"
-		}
-
 		log.WithFields(log.Fields{
 			"mqtt.server":        config.MQTT.Server,
 			"mqtt.client_id":     config.MQTT.ClientID,
@@ -109,7 +105,7 @@ func main() {
 			"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
 			"mqtt.qos":           config.MQTT.QoS,
 			"mqtt.username":      config.MQTT.Username,
-			"mqtt.password":      mqttPassword,
+			"mqtt.password":      config.MQTT.mqttPassword,
 			"mqtt.password_file": config.MQTT.PasswordFile,
 		}).Info("Starting MQTT client to connect to broker")
 	}

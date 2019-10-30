@@ -57,16 +57,62 @@ func mqttConnect(cfg configuration, wg *sync.WaitGroup) {
 
 	mqttClient := mqtt.NewClient(mqttOptions)
 
+	if config.verbose {
+		log.WithFields(log.Fields{
+			"mqtt.server":        config.MQTT.Server,
+			"mqtt.client_id":     config.MQTT.ClientID,
+			"mqtt.tls_ca":        config.MQTT.TLSCA,
+			"mqtt.tls_cert":      config.MQTT.TLSCert,
+			"mqtt.tls_key":       config.MQTT.TLSKey,
+			"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
+			"mqtt.qos":           config.MQTT.QoS,
+			"mqtt.username":      config.MQTT.Username,
+			"mqtt.password":      config.MQTT.mqttPassword,
+			"mqtt.password_file": config.MQTT.PasswordFile,
+		}).Info("Connecting to MQTT broker")
+	}
+
 	mqttToken := mqttClient.Connect()
 	mqttToken.Wait()
 	if mqttToken.Error() != nil {
 		log.Fatal(mqttToken.Error())
 	}
 
+	if config.verbose {
+		log.WithFields(log.Fields{
+			"mqtt.server":        config.MQTT.Server,
+			"mqtt.client_id":     config.MQTT.ClientID,
+			"mqtt.tls_ca":        config.MQTT.TLSCA,
+			"mqtt.tls_cert":      config.MQTT.TLSCert,
+			"mqtt.tls_key":       config.MQTT.TLSKey,
+			"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
+			"mqtt.qos":           config.MQTT.QoS,
+			"mqtt.username":      config.MQTT.Username,
+			"mqtt.password":      config.MQTT.mqttPassword,
+			"mqtt.password_file": config.MQTT.PasswordFile,
+			"mqtt.topic":         "$SYS/#",
+		}).Info("Subscribing to statistics topic")
+	}
 	mqttClient.Subscribe(mosquittoStatisticsTopic, byte(cfg.MQTT.QoS), mqttMessageHandler)
 }
 
 func mqttMessageHandler(c mqtt.Client, msg mqtt.Message) {
+	if config.verbose {
+		log.WithFields(log.Fields{
+			"mqtt.server":        config.MQTT.Server,
+			"mqtt.client_id":     config.MQTT.ClientID,
+			"mqtt.tls_ca":        config.MQTT.TLSCA,
+			"mqtt.tls_cert":      config.MQTT.TLSCert,
+			"mqtt.tls_key":       config.MQTT.TLSKey,
+			"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
+			"mqtt.qos":           config.MQTT.QoS,
+			"mqtt.username":      config.MQTT.Username,
+			"mqtt.password":      config.MQTT.mqttPassword,
+			"mqtt.password_file": config.MQTT.PasswordFile,
+			"message.topic":      msg.Topic(),
+			"message.payload":    string(msg.Payload()),
+		}).Info("Received MQTT message on subscribed topic")
+	}
 	mutex.Lock()
 	{
 		processMessages(msg)
@@ -82,260 +128,386 @@ func processMessages(msg mqtt.Message) {
 	if topic == "$SYS/broker/clients/total" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.totalClients = u
 		}
-		return
 	} else if topic == "$SYS/broker/clients/maximum" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.maximumClients = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/clients/inactive" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.incativeClients = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/clients/disconnected" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.disconnectedClients = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/clients/active" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.activeClients = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/clients/connected" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.connectedClients = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/clients/expired" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.expiredClients = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/load/messages/received/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.messagesReceived1min = f
+		}
 	} else if topic == "$SYS/broker/load/messages/received/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.messagesReceived5min = f
+		}
 	} else if topic == "$SYS/broker/load/messages/received/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.messagesReceived15min = f
+		}
 	} else if topic == "$SYS/broker/load/messages/sent/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.messagesSent1min = f
+		}
 	} else if topic == "$SYS/broker/load/messages/sent/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.messagesSent5min = f
+		}
 	} else if topic == "$SYS/broker/load/messages/sent/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.messagesSent15min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/dropped/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishDropped1min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/dropped/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishDropped5min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/dropped/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishDropped15min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/received/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishReceived1min = f
+		}
+	} else if topic == "$SYS/broker/load/publish/received/5min" {
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishReceived5min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/received/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishReceived15min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/sent/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishSent1min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/sent/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishSent5min = f
+		}
 	} else if topic == "$SYS/broker/load/publish/sent/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.publishSent15min = f
+		}
 	} else if topic == "$SYS/broker/load/bytes/received/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.bytesReceived1min = f
+		}
 	} else if topic == "$SYS/broker/load/bytes/received/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.bytesReceived5min = f
+		}
 	} else if topic == "$SYS/broker/load/bytes/received/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.bytesReceived15min = f
+		}
 	} else if topic == "$SYS/broker/load/bytes/sent/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.bytesSent1min = f
+		}
 	} else if topic == "$SYS/broker/load/bytes/sent/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.bytesSent5min = f
+		}
 	} else if topic == "$SYS/broker/load/bytes/sent/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.bytesSent15min = f
+		}
 	} else if topic == "$SYS/broker/load/sockets/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.sockets1min = f
+		}
 	} else if topic == "$SYS/broker/load/sockets/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.sockets5min = f
+		}
 	} else if topic == "$SYS/broker/load/sockets/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.sockets15min = f
+		}
 	} else if topic == "$SYS/broker/load/connections/1min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.connections1min = f
+		}
 	} else if topic == "$SYS/broker/load/connections/5min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.connections5min = f
+		}
 	} else if topic == "$SYS/broker/load/connections/15min" {
-		return
+		f, err := strconv.ParseFloat(payload, 64)
+		if err != nil {
+			logStringConversionError(topic, payload, err)
+		} else {
+			mqttStats.connections15min = f
+		}
 	} else if topic == "$SYS/broker/messages/stored" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.messagesStored = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/messages/received" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.messagesReceived += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/messages/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.messagesSent += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/store/messages/count" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.messagesStoredCount += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/store/messages/bytes" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.messagesStoredBytes += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/subscriptions/count" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.subscriptionsCount += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/retained messages/count" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.retainedMessagesCount += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/heap/current" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.heapCurrent = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/heap/maximum" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.heapMaximum = u
 		}
-
-		return
 	} else if topic == "$SYS/broker/publish/messages/dropped" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.publishMessagesDropped += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/publish/messages/received" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.publishMessagesReceived += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/publish/messages/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.publishMessagesSent += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/publish/bytes/received" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.publishBytesReceived += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/publish/bytes/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.publishBytesSent += u
 		}
-
-		return
 	} else if topic == "$SYS/broker/bytes/received" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.bytesReceived += u
 		}
-		return
 	} else if topic == "$SYS/broker/bytes/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
-			return
+			logStringConversionError(topic, payload, err)
 		} else {
 			mqttStats.bytesSent += u
 		}
-		return
-	} else {
 	}
+
+	log.WithFields(log.Fields{
+		"mqtt.server":        config.MQTT.Server,
+		"mqtt.client_id":     config.MQTT.ClientID,
+		"mqtt.tls_ca":        config.MQTT.TLSCA,
+		"mqtt.tls_cert":      config.MQTT.TLSCert,
+		"mqtt.tls_key":       config.MQTT.TLSKey,
+		"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
+		"mqtt.qos":           config.MQTT.QoS,
+		"mqtt.username":      config.MQTT.Username,
+		"mqtt.password":      config.MQTT.mqttPassword,
+		"mqtt.password_file": config.MQTT.PasswordFile,
+		"message.topic":      topic,
+		"message.payload":    payload,
+	}).Warn("Unhandled MQTT message on statistics topic")
 	return
+}
+
+func logStringConversionError(topic string, payload string, err error) {
+	log.WithFields(log.Fields{
+		"mqtt.server":        config.MQTT.Server,
+		"mqtt.client_id":     config.MQTT.ClientID,
+		"mqtt.tls_ca":        config.MQTT.TLSCA,
+		"mqtt.tls_cert":      config.MQTT.TLSCert,
+		"mqtt.tls_key":       config.MQTT.TLSKey,
+		"mqtt.insecure_ssl":  config.MQTT.InsecureSSL,
+		"mqtt.qos":           config.MQTT.QoS,
+		"mqtt.username":      config.MQTT.Username,
+		"mqtt.password":      config.MQTT.mqttPassword,
+		"mqtt.password_file": config.MQTT.PasswordFile,
+		"message.topic":      topic,
+		"message.payload":    payload,
+		"error":              err,
+	}).Error("Can't convert payload to a number")
 }
