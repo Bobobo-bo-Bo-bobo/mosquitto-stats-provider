@@ -9,7 +9,7 @@ import (
 func influxHandler(writer http.ResponseWriter, request *http.Request) {
 	var str []byte
 
-	now := time.Now().UnixNano()
+	now := time.Now().Unix() * 1e+09
 	mutex.Lock()
 	{
 		str = append(str, fmt.Sprintf("mosquitto_statistics,broker=%s total_clients=%d %d\n"+
