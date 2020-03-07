@@ -92,7 +92,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc(config.Service.InfluxEndpoint, influxHandler)
 	router.HandleFunc(config.Service.PrometheusEndpoint, prometheusHandler)
-
+	router.HandleFunc(config.Service.KeyValueEndpoint, keyValueHandler)
 	wg.Add(2)
 
 	if config.verbose {

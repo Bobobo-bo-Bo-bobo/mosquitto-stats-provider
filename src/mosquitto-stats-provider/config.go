@@ -62,10 +62,13 @@ func setDefaultConfigurationValues(c *configuration) {
 		c.Service.Listen = "localhost:8383"
 	}
 	if c.Service.InfluxEndpoint == "" {
-		c.Service.InfluxEndpoint = "/influx"
+		c.Service.InfluxEndpoint = influxDefaultEndpoint
 	}
 	if c.Service.PrometheusEndpoint == "" {
-		c.Service.PrometheusEndpoint = "/metrics"
+		c.Service.PrometheusEndpoint = prometheusDefaultEndpoint
+	}
+	if c.Service.KeyValueEndpoint == "" {
+		c.Service.KeyValueEndpoint = kvDefaultEndpoint
 	}
 
 	if c.MQTT.ClientID == "" {
