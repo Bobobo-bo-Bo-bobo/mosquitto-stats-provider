@@ -12,7 +12,7 @@ depend:
 	env GOPATH=$(GOPATH) go get -u gopkg.in/ini.v1
 	env GOPATH=$(GOPATH) go get -u github.com/nu7hatch/gouuid
 
-build:
+build: depend
 	env GOPATH=$(GOPATH) go install $(PROGRAMS)
 
 destdirs:
