@@ -1,6 +1,6 @@
 package main
 
-const version = "1.0.0-20191030"
+const version = "1.0.0-20200315"
 
 const (
 	// QoSAtMostOnce - QoS 0
