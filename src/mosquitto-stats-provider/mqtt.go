@@ -375,42 +375,42 @@ func processMessages(msg mqtt.Message) {
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.messagesReceived += u
+			mqttStats.messagesReceived = u
 		}
 	} else if topic == "$SYS/broker/messages/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.messagesSent += u
+			mqttStats.messagesSent = u
 		}
 	} else if topic == "$SYS/broker/store/messages/count" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.messagesStoredCount += u
+			mqttStats.messagesStoredCount = u
 		}
 	} else if topic == "$SYS/broker/store/messages/bytes" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.messagesStoredBytes += u
+			mqttStats.messagesStoredBytes = u
 		}
 	} else if topic == "$SYS/broker/subscriptions/count" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.subscriptionsCount += u
+			mqttStats.subscriptionsCount = u
 		}
 	} else if topic == "$SYS/broker/retained messages/count" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.retainedMessagesCount += u
+			mqttStats.retainedMessagesCount = u
 		}
 	} else if topic == "$SYS/broker/heap/current" {
 		u, err := strconv.ParseUint(payload, 10, 64)
@@ -431,49 +431,49 @@ func processMessages(msg mqtt.Message) {
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.publishMessagesDropped += u
+			mqttStats.publishMessagesDropped = u
 		}
 	} else if topic == "$SYS/broker/publish/messages/received" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.publishMessagesReceived += u
+			mqttStats.publishMessagesReceived = u
 		}
 	} else if topic == "$SYS/broker/publish/messages/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.publishMessagesSent += u
+			mqttStats.publishMessagesSent = u
 		}
 	} else if topic == "$SYS/broker/publish/bytes/received" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.publishBytesReceived += u
+			mqttStats.publishBytesReceived = u
 		}
 	} else if topic == "$SYS/broker/publish/bytes/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.publishBytesSent += u
+			mqttStats.publishBytesSent = u
 		}
 	} else if topic == "$SYS/broker/bytes/received" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.bytesReceived += u
+			mqttStats.bytesReceived = u
 		}
 	} else if topic == "$SYS/broker/bytes/sent" {
 		u, err := strconv.ParseUint(payload, 10, 64)
 		if err != nil {
 			logStringConversionError(topic, payload, err)
 		} else {
-			mqttStats.bytesSent += u
+			mqttStats.bytesSent = u
 		}
 	} else if topic == "$SYS/broker/version" {
 		// skip
